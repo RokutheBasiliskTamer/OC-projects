@@ -5,7 +5,6 @@ local component = require("component")
 local text = require("text")
 local event = require("event")
 local fs = require("filesystem")
-local sh = require("shell")
 local rs = component.redstone
 local modem = component.modem
 
@@ -14,10 +13,12 @@ local address = nil
 local delay = 5
 local port = 12
 
-if fs.exists(sh.getPath("MAC.psd")) then
-temp = io.open("address.psd", "r")
-address = temp: read("*a")
-temp: close()
+if fs.exists("/home/bin/MAC.psd") then
+reader = io.open("/home/bin/MAC.psd", "r")
+address = reader: read("*a")
+reader: close()
+
+end
 
 term.clear()
 print("Enter the password")
@@ -28,11 +29,11 @@ modem.broadcast(port, input)
 
 local _,_,mac,_,_,pull = event.pull(delay, "modem")
 
-if address == nil then
-address = mac
-temp = io.open("MAC.psd", "w")
-temp: write(address)
-temp: close()
+if address == nil and mac then
+local address = mac
+writer = io.open("/home/bin/MAC.psd", "w")
+writer: write(mac)
+writer: close()
 end
 
 function door(incAddress, message)
@@ -41,6 +42,7 @@ if message == "true" then
 rs.setOutput(5, 15) -- this is sending a signal to the left change the number for the side you need
 os.sleep(delay)
 rs.setOutput(5, 0)
+os.execute("/home/bin/door.lua")
 
 elseif message == "false" then
 print ("Incorrect")
@@ -49,7 +51,5 @@ os.execute("/home/bin/door.lua")
 end
 end
 end
-
-
 
 door(mac,pull)
