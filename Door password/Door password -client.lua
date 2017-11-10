@@ -2,7 +2,10 @@
 
 local term = require("term")
 local component = require("component")
+local text = require("text")
 local event = require("event")
+local fs = require("filesystem")
+local sh = require("shell")
 local rs = component.redstone
 local modem = component.modem
 
@@ -10,6 +13,11 @@ local modem = component.modem
 local address = nil
 local delay = 5
 local port = 12
+
+if fs.exists(sh.getPath("MAC.psd")) then
+temp = io.open("address.psd", "r")
+address = temp: read("*a")
+temp: close()
 
 term.clear()
 print("Enter the password")
@@ -22,6 +30,10 @@ local _,_,mac,_,_,pull = event.pull(delay, "modem")
 
 if address == nil then
 address = mac
+temp = io.open("MAC.psd", "w")
+temp: write(address)
+temp: close()
+end
 
 function door(incAddress, message)
 if incAddress == address then
