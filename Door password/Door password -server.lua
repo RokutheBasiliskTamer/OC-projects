@@ -45,6 +45,7 @@ local _,_,mac,_,_,pull = event.pull("modem")
 
 if address == nil then
 adress = mac
+end
 
 function door(incAddress,message)
 
